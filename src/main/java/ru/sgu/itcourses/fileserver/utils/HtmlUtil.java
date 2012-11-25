@@ -13,7 +13,8 @@ import java.util.List;
 public class HtmlUtil {
     private static final String head = "<html> <head> <title>File Server</title> </head> <body>";
     private static final String tail = "</body></html>";
-    public static String getHtmlByPath(File path) {
+
+    public static String getHtmlByPath(File path, String login) {
         if (!path.exists() || !path.canWrite()) {
             return null;
         }
@@ -21,7 +22,21 @@ public class HtmlUtil {
         StringBuilder html = new StringBuilder();
         html.append(head);
         List<File> directories = getDirectories(path);
+        html.append("<p>You have logged in as ");
+        html.append(login);
+        html.append(".&nbsp");
+        html.append("<a href='/logout'>Logout</a>");
+        html.append("</p>");
         html.append("<ul>");
+        //parent
+        html.append("<li>");
+        File parentFile = path.getParentFile();
+        if (parentFile != null) {
+            html.append("<a href='/dir?path=").append(parentFile.getAbsolutePath()).append("'>");
+            html.append("..");
+            html.append("</a>");
+            html.append("</li>");
+        }
         for (File directory : directories) {
             html.append("<li>");
             html.append("<a href='/dir?path=").append(directory.getAbsolutePath()).append("'>");
