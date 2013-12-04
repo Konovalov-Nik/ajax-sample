@@ -16,7 +16,7 @@ import java.util.Scanner;
 /**
  * @author Nikita Konovalov
  */
-@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/dir", "/", "/logout"})
+@WebFilter(filterName = "AuthenticationFilter", urlPatterns = {"/login", "/", "/logout"})
 public class AuthenticationFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFilter.class);
     public static final String USER = "user";
@@ -25,15 +25,7 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         try {
-            InputStream source = filterConfig.getServletContext().getResourceAsStream("WEB-INF/users.txt");
-            Scanner scanner = new Scanner(source);
-            while (scanner.hasNext()) {
-                String login = scanner.next();
-                String password = scanner.next();
-                String path = scanner.next();
-                UserBase.addUser(login, password, path);
-            }
-            scanner.close();
+            UserBase.loadUsers(filterConfig.getServletContext());
         } catch (Exception e) {
             LOG.error("Cant load users.txt", e);
         }
@@ -57,7 +49,7 @@ public class AuthenticationFilter implements Filter {
             if (login != null && password != null) {
                 if (UserBase.authenticate(login, password)) {
                     session.setAttribute(AuthenticationFilter.USER, login);
-                    filterChain.doFilter(servletRequest, servletResponse);
+                    resp.sendRedirect("/chat");
                 } else {
                     resp.sendRedirect("/loginpage.html");
                 }

@@ -1,1 +1,8 @@
-John 123 c:\work
+{
+    "users" : [
+        {
+            "login": "John",
+            "password": "123"
+        }
+    ]
+}
